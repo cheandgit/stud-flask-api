@@ -3,6 +3,6 @@
 ## Структура проекта:
 
 student-api-project/
-├── app.py              # Основной файл
-├── requirements.txt    # Зависимости
+├── app.py              (Основной файл)
+├── requirements.txt    (Зависимости)
 └── README.md

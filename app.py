@@ -4,8 +4,11 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+# Для Flask 3.0+
+app.json.ensure_ascii = False  # РАБОТАЕТ!
+
 # Отключаем ASCII-кодирование для JSON
-app.config['JSON_AS_ASCII'] = False
+# app.config['JSON_AS_ASCII'] = False
 
 # Простая "база данных" в памяти
 students = {

@@ -5,7 +5,10 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Простая "база данных" в памяти
-students = []
+students = {
+    1: {"id": 1, "name": "Иван Иванов", "group": "ПИ-101"},
+    2: {"id": 2, "name": "Мария Петрова", "group": "ИС-202"}
+}
 
 @app.route('/')
 def home():

@@ -4,20 +4,16 @@ from datetime import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
+app.json.ensure_ascii = False
+CORS(app)  # Разрешает запросы с любых доменов
 
-# Для Flask 3.0+
-app.json.ensure_ascii = False  # РАБОТАЕТ!
+# Используем список для хранения студентов
+students = [
+    {"id": 1, "name": "Иван Иванов", "group": "ПИ-101"},
+    {"id": 2, "name": "Мария Петрова", "group": "ИС-202"}
+]
 
-CORS(app)   # Разрешает запросы с любых доменов
-
-# Отключаем ASCII-кодирование для JSON
-# app.config['JSON_AS_ASCII'] = False
-
-# Простая "база данных" в памяти
-students = {
-    1: {"id": 1, "name": "Иван Иванов", "group": "ПИ-101"},
-    2: {"id": 2, "name": "Мария Петрова", "group": "ИС-202"}
-}
+# ИЛИ если хотите оставить словарь, но тогда измените логику
 
 @app.route('/')
 def home():
@@ -26,9 +22,9 @@ def home():
         "endpoints": {
             "GET /students": "Все студенты",
             "POST /students": "Добавить студента",
+            "DELETE /students/<id>": "Удалить студента",
             "GET /health": "Проверка работы"
         },
-        "deployed_on": "Render + GitHub Codespaces",
         "timestamp": datetime.now().isoformat()
     })
 
@@ -46,28 +42,41 @@ def add_student():
     if not data or 'name' not in data:
         return jsonify({"error": "Нужно поле 'name'"}), 400
     
+    # Находим максимальный ID
+    max_id = max([s['id'] for s in students]) if students else 0
+    
     student = {
-        "id": len(students) + 1,
+        "id": max_id + 1,
         "name": data['name'],
         "group": data.get('group', 'Не указана'),
-        "created": datetime.now().isoformat(),
-        # Добавляем инфо о среде
-        "deployed_on": "Render" if os.getenv('RENDER') else "Codespaces"
+        "created": datetime.now().isoformat()
     }
     
-    students.append(student)
+    students.append(student) 
     return jsonify(student), 201
+
+# ДОБАВЬТЕ ЭТОТ ЭНДПОИНТ ДЛЯ УДАЛЕНИЯ!
+@app.route('/students/<int:student_id>', methods=['DELETE'])
+def delete_student(student_id):
+    # Ищем студента по ID
+    for i, student in enumerate(students):
+        if student['id'] == student_id:
+            deleted = students.pop(i)
+            return jsonify({
+                "message": "Студент удален",
+                "student": deleted
+            })
+    
+    return jsonify({"error": "Студент не найден"}), 404
 
 @app.route('/health')
 def health():
     return jsonify({
         "status": "✅ OK",
         "service": "Student API",
-        "environment": "Render" if os.getenv('RENDER') else "GitHub Codespaces",
         "timestamp": datetime.now().isoformat()
     })
 
-# Для Render!
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)

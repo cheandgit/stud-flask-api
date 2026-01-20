@@ -4,6 +4,9 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+# Отключаем ASCII-кодирование для JSON
+app.config['JSON_AS_ASCII'] = False
+
 # Простая "база данных" в памяти
 students = {
     1: {"id": 1, "name": "Иван Иванов", "group": "ПИ-101"},

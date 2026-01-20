@@ -4,10 +4,11 @@ from datetime import datetime
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)   # Разрешает запросы с любых доменов
 
 # Для Flask 3.0+
 app.json.ensure_ascii = False  # РАБОТАЕТ!
+
+CORS(app)   # Разрешает запросы с любых доменов
 
 # Отключаем ASCII-кодирование для JSON
 # app.config['JSON_AS_ASCII'] = False

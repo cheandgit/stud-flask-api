@@ -32,8 +32,8 @@ def check_api_key():
         provided_key = request.headers.get('X-API-Key') or request.args.get('api_key')
         
         if not API_KEY:
-            return jsonify({"error": "API key not configured on server"}), 500
-            
+            # return jsonify({"error": "API key not configured on server"}), 500
+            return
         if provided_key != API_KEY:
             print(f"❌ Неверный ключ! Ожидался: {API_KEY[:5]}..., получен: {provided_key}")
             return jsonify({

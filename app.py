@@ -64,6 +64,7 @@ def get_students():
         "students": students
     })
 
+# ЭНДПОИНТ ДЛЯ ДОБАВЛЕНИЯ
 @app.route('/students', methods=['POST'])
 def add_student():
     data = request.get_json()
@@ -84,7 +85,7 @@ def add_student():
     students.append(student) 
     return jsonify(student), 201
 
-# ДОБАВЬТЕ ЭТОТ ЭНДПОИНТ ДЛЯ УДАЛЕНИЯ!
+# ЭНДПОИНТ ДЛЯ УДАЛЕНИЯ
 @app.route('/students/<int:student_id>', methods=['DELETE'])
 def delete_student(student_id):
     # Ищем студента по ID
@@ -95,6 +96,32 @@ def delete_student(student_id):
                 "message": "Студент удален",
                 "student": deleted
             })
+    
+    return jsonify({"error": "Студент не найден"}), 404
+
+# ЭНДПОИНТ ДЛЯ РЕДАКТИРОВАНИЯ
+@app.route('/students/<int:student_id>', methods=['PUT'])
+def update_student(student_id):
+    data = request.get_json()
+    
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    # Ищем студента по ID
+    for i, student in enumerate(students):
+        if student['id'] == student_id:
+            # Обновляем поля (если они переданы в запросе)
+            if 'name' in data:
+                student['name'] = data['name']
+            if 'group' in data:
+                student['group'] = data['group']
+            # Можно также добавить обновление даты, если нужно
+            # student['updated'] = datetime.now().isoformat()
+            
+            return jsonify({
+                "message": "Студент обновлён",
+                "student": student
+            }), 200
     
     return jsonify({"error": "Студент не найден"}), 404
 

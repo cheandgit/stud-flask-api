@@ -57,9 +57,26 @@ def home():
         "timestamp": datetime.now().isoformat()
     })
 
+# @app.route('/students', methods=['GET'])
+# def get_students():
+#     return jsonify({
+#         "count": len(students),
+#         "students": students
+#     })
+
 @app.route('/students', methods=['GET'])
 def get_students():
-    return jsonify({
+    group_filter = request.args.get('group')
+    if group_filter:
+        # Фильтруем список по группе
+        filtered = [s for s in students if s.get('group') == group_filter]
+        return jsonify({
+            "count": len(filtered),
+            "students": filtered,
+            "filter": {"group": group_filter}
+        })
+    else:
+        return jsonify({
         "count": len(students),
         "students": students
     })
